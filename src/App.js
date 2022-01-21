@@ -1,24 +1,16 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useContext } from "react";
+import AuthContext from "./contex/Auth/AuthContext";
+import AuthProvider from "./contex/Auth/AuthProvider";
+import GuestMain from "./components/Guest/GuestMain/GuestMain";
 
 function App() {
+  const { admin } = useContext(AuthContext);
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      {admin ? <div><span>хуй</span></div> : <GuestMain />}
+    </AuthProvider>
   );
 }
 
