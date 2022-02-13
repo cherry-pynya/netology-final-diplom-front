@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import AuthContext from "./contex/Auth/AuthContext";
 import AuthProvider from "./contex/Auth/AuthProvider";
 import GuestMain from "./components/Guest/GuestMain/GuestMain";
+import GuestProvider from "./contex/Guest/GuestProvider";
 
 function App() {
   const { admin } = useContext(AuthContext);
@@ -9,7 +10,9 @@ function App() {
 
   return (
     <AuthProvider>
-      {admin ? <div><span>хуй</span></div> : <GuestMain />}
+      <GuestProvider>
+        {admin ? <div><span>хуй</span></div> : <GuestMain />}
+      </GuestProvider>
     </AuthProvider>
   );
 }
