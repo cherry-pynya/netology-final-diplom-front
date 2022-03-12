@@ -3,9 +3,10 @@ import GuestContext from "./GuestContext";
 import PropTypes from 'prop-types';
 import { useEffect } from "react";
 import { initialDates, initialMovies, initialReservation } from './tempData';
+import datesFactory from "../../utils/datesFactory";
 
 export default function GuestProvider(props) {
-    const [dates, setDates] = useState(initialDates);
+    const [dates, setDates] = useState(datesFactory());
     const [movies, setMovies] = useState(initialMovies);
     const [reservation, setReservation] = useState(initialReservation);
     const [currentDate, setCurrentDate] = useState(0);
