@@ -5,7 +5,7 @@ import Movie from '../Movie/Movie';
 import DatePicker from "../DatePicker/DatePicker";
 
 export default function HomePage() {
-  const [dates, currentDate, movies] = useContext(GuestContext);
+  const {dates, currentDate, movies} = useContext(GuestContext);
   return (
     <Main>
       <DatePicker />

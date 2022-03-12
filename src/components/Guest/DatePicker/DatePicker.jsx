@@ -5,15 +5,16 @@ import { useContext } from "react";
 import GuestContext from "../../../contex/Guest/GuestContext";
 
 export default function DatePicker() {
-  const [dates, currentDate] = useContext(GuestContext);
+  const {dates, currentDate} = useContext(GuestContext);
   const endOfTheLine = dates[dates.length - 1].date;;
-  const lastElementNumber = dates[dates.length - 1].date;
+  const beginnig = dates[0].date;
+  const curent = dates.find((el) => el.active === true).date;
 
   return (
     <nav className="page-nav">
-      {endOfTheLine !== lastElementNumber ? <DatePickerPrevLink /> : false}
+      {beginnig !== curent ? <DatePickerPrevLink /> : false}
       {dates.map((el) => <DatePickerLink item={el} currentDate={currentDate} key={nanoid()} />)}
-      {endOfTheLine === lastElementNumber ? <DatePickerNextLink /> : false}
+      {endOfTheLine !== curent ? <DatePickerNextLink /> : false}
     </nav>
   );
 }
@@ -25,20 +26,28 @@ function DatePickerLink({ item, currentDate }) {
   if (active) classes += ' page-nav__day_chosen';
   if (weekEnd) classes += ' page-nav__day_weekend';
 
+  const { chooseDate } = useContext(GuestContext);
+
+  const click = () => {
+    chooseDate(date);
+  };
+
   return (
-    <Link className={classes} to='/'>
+    <button className={classes} style={{border: 'none', outline: 'none'}} onClick={click}>
       <span className="page-nav__day-week">{weekDay}</span>
       <span className="page-nav__day-number">{date}</span>
-    </Link>
+    </button>
   );
 }
 
 function DatePickerNextLink() {
-    return <Link className="page-nav__day page-nav__day_next" to='/'></Link>
+    const { nextDay } = useContext(GuestContext);
+    return <button className="page-nav__day page-nav__day_next" onClick={nextDay} style={{border: 'none', outline: 'none'}}></button>
 }
 
 function DatePickerPrevLink() {
-    return <Link className="page-nav__day page-nav__day_prev" to='/'></Link>
+  const { prevDay } = useContext(GuestContext);
+    return <button className="page-nav__day page-nav__day_prev" onClick={prevDay} style={{border: 'none', outline: 'none'}}></button>
 }
 
 DatePickerLink.propTypes = {

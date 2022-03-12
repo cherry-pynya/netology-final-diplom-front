@@ -4,37 +4,37 @@ export const initialDates = [
   // список доступных дат должен приходить с сервера
   {
     weekDay: "Пн",
-    date: 31,
+    date: 12,
     weekEnd: false,
     active: true,
   },
   {
     weekDay: "Вт",
-    date: 1,
+    date: 13,
     weekEnd: false,
     active: false,
   },
   {
     weekDay: "Ср",
-    date: 2,
+    date: 14,
     weekEnd: false,
     active: false,
   },
   {
     weekDay: "Чт",
-    date: 3,
+    date: 15,
     weekEnd: false,
     active: false,
   },
   {
     weekDay: "Пт",
-    date: 4,
+    date: 16,
     active: false,
     weekEnd: false,
   },
   {
     weekDay: "Сб",
-    date: 5,
+    date: 17,
     active: false,
     weekEnd: true,
   },

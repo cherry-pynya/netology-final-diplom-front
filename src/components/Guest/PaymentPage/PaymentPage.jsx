@@ -4,7 +4,7 @@ import GuestContext from "../../../contex/Guest/GuestContext";
 import PropTypes from 'prop-types';
 
 export default function PaymentPage() {
-  const [dates, currentDate, movies, reservation] = useContext(GuestContext);
+  const {dates, currentDate, movies, reservation} = useContext(GuestContext);
   const pay = () => {
     console.log('click')
   };
