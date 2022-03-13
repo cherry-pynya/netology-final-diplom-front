@@ -1,5 +1,5 @@
-import poster1 from '../../../asets/poster1.jpg'
-import poster2 from '../../../asets/poster2.jpg'
+import poster1 from '../../../asets/client/poster1.jpg'
+import poster2 from '../../../asets/client/poster2.jpg'
 import { Link } from 'react-router-dom';
 import { nanoid } from 'nanoid';
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import React from "react";
 import GuestContext from "./GuestContext";
 import PropTypes from 'prop-types';
 import { useEffect } from "react";

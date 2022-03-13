@@ -6,7 +6,7 @@ export default function AuthProvider(props) {
     const [admin, setAdmin] = useState(false);
 
     return (
-        <AuthContext.Provider value={admin, setAdmin}>
+        <AuthContext.Provider value={{admin, setAdmin}}>
             {props.children}
         </AuthContext.Provider>
     );
