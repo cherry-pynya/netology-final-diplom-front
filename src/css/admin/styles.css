@@ -774,4 +774,12 @@ input[type='radio'], input[type='submit'], button, .conf-step__header, select {
   -webkit-transition: .3s all ease;
   transition: .3s all ease;
 }
+
+.appearance {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+}
 /*# sourceMappingURL=styles.css.map */

@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { useState } from "react";
 import AdminContext from "../../../../contex/Admin/AdminContext";
+import PropTypes from 'prop-types';
+import { nanoid } from "nanoid";
 
 export default function HallManager() {
   const { halls } = useContext(AdminContext);
@@ -21,7 +23,7 @@ export default function HallManager() {
       <div className="conf-step__wrapper">
         <p className="conf-step__paragraph">Доступные залы:</p>
         <ul className="conf-step__list">
-            {halls.map((el) => <Hall obj={el} />)}
+            {halls.map((el) => <Hall obj={el} key={nanoid()} />)}
         </ul>
         <button className="conf-step__button conf-step__button-accent">
           Создать зал
@@ -29,6 +31,10 @@ export default function HallManager() {
       </div>
     </section>
   );
+}
+
+HallManager.propTypes = {
+  halls: PropTypes.object,
 }
 
 function Hall({ obj }) {
@@ -39,4 +45,8 @@ function Hall({ obj }) {
       <button className="conf-step__button conf-step__button-trash"></button>
     </li>
   );
+}
+
+Hall.propTypes = {
+  obj: PropTypes.object,
 }

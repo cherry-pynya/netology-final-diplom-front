@@ -6,6 +6,7 @@ import Main from "../../Guest/Main/Main";
 import AdminHeader from '../AdminHeader/AdminHeader';
 import HallManager from "../Cabinet/HallManager/HallManager";
 import HallConfig from "../Cabinet/HallConfig/HallConfig";
+import PriceConfig from "../Cabinet/PriceConfig/PriceCongig";
 
 export default function AdminMain() {
   useEffect(() => {
@@ -17,6 +18,7 @@ export default function AdminMain() {
       <AdminHeader />
       <HallManager />
       <HallConfig />
+      <PriceConfig />
     </Main>
   );
 };

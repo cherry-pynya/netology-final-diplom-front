@@ -514,4 +514,12 @@ html {
     display: none;
   }
 }
+
+.appearance {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+}
 /*# sourceMappingURL=styles.css.map */
