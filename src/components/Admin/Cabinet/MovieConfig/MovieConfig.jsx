@@ -85,10 +85,10 @@ Movie.propTypes = {
 function ShowTime({ hall }) {
   const { showTimes } = useContext(AdminContext);
   const [show, setShow] = useState([]);
-  const { number, id } = hall;
+  const { number, _id } = hall;
 
   useEffect(() => {
-    setShow(showTimes.filter((el) => el.hall.id === id));
+    setShow(showTimes.filter((el) => el.hall._id === _id));
   }, []);
 
   return (

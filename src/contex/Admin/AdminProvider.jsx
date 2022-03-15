@@ -1,13 +1,47 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminContext from "./AdminContext";
+import giveMeTheShow from "../../utils/giveMeTheShow";
 
 export default function AdminProvider(props) {
+  const pending = process.env.PENDING || "pending";
+  const error = process.env.ERROR || "error";
+  const success = process.env.SUCCESS || "success";
   const [login, setLogin] = useState(false);
-  const [halls, setHalls] = useState(hallss);
-  const [movies, setMovies] = useState(moviess);
-  const [showTimes, setShowTimes] = useState(showTimess);
+  const [halls, setHalls] = useState([]);
+  const [movies, setMovies] = useState([]);
+  const [showTimes, setShowTimes] = useState([]);
   const [sellingStatus, setSellingStatus] = useState(false);
+  const [appStatus, setAppStatus] = useState(success);
+
+  const getSchedule = () => {
+    const url = process.env.SCHEDULE || "http://localhost:4000/data/schedule";
+    fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const { halls, movies, sellingStatus, showTimes } = data;
+        setHalls(halls);
+        setMovies(movies);
+        setSellingStatus(sellingStatus);
+        setShowTimes(giveMeTheShow(halls, movies, showTimes));
+        setAppStatus(success);
+      });
+  };
+
+  useEffect(() => {
+    try {
+        setAppStatus(pending);
+        getSchedule();
+    } catch (e) {
+      setAppStatus(error);
+      console.log(e);
+    }
+  }, []);
 
   return (
     <AdminContext.Provider
@@ -20,7 +54,12 @@ export default function AdminProvider(props) {
         setMovies,
         showTimes,
         setShowTimes,
-        sellingStatus, setSellingStatus
+        sellingStatus,
+        setSellingStatus,
+        appStatus,
+        pending,
+        error,
+        success
       }}
     >
       {props.children}
@@ -31,89 +70,3 @@ export default function AdminProvider(props) {
 AdminProvider.propTypes = {
   children: PropTypes.node,
 };
-
-const hallss = [
-  {
-    number: 1,
-    id: 1234,
-    row: 10,
-    col: 8,
-    vipPrice: 0,
-    price: 0,
-    seats: [
-      ["x", "x", "x", "f", "f", "x", "x", "x"],
-      ["f", "f", "f", "f", "f", "f", "f", "f"],
-      ["f", "f", "f", "f", "f", "f", "f", "f"],
-      ["f", "f", "f", "f", "f", "f", "f", "f"],
-      ["f", "f", "f", "v", "v", "f", "f", "f"],
-      ["f", "f", "f", "v", "v", "f", "f", "f"],
-      ["f", "f", "f", "f", "f", "f", "f", "f"],
-      ["f", "f", "f", "f", "f", "f", "f", "f"],
-      ["f", "f", "f", "f", "f", "f", "f", "f"],
-      ["f", "f", "f", "f", "f", "f", "f", "f"],
-    ],
-  },
-  {
-    number: 2,
-    row: 9,
-    id: 12344,
-    vipPrice: 0,
-    price: 0,
-    col: 8,
-    seats: [
-      ["x", "x", "x", "f", "f", "x", "x", "x"],
-      ["f", "f", "f", "f", "f", "f", "f", "f"],
-      ["f", "f", "f", "f", "f", "f", "f", "f"],
-      ["f", "f", "f", "f", "f", "f", "f", "f"],
-      ["f", "f", "f", "v", "v", "f", "f", "f"],
-      ["f", "f", "f", "v", "v", "f", "f", "f"],
-      ["f", "f", "f", "f", "f", "f", "f", "f"],
-      ["f", "f", "f", "f", "f", "f", "f", "f"],
-      ["f", "f", "f", "f", "f", "f", "f", "f"],
-    ],
-  },
-];
-
-const moviess = [
-  {
-    _id: "1ssdsd",
-    name: "Не грози южному централу",
-    length: "120 минут",
-    img: ".adress",
-  },
-];
-
-const showTimess = [
-  {
-    _id: "sdsds",
-    time: "13:30",
-    hall: {
-      number: 1,
-      id: 1234,
-      row: 10,
-      col: 8,
-      vipPrice: 0,
-      price: 0,
-      seats: [
-        ["x", "x", "x", "f", "f", "x", "x", "x"],
-        ["f", "f", "f", "f", "f", "f", "f", "f"],
-        ["f", "f", "f", "f", "f", "f", "f", "f"],
-        ["f", "f", "f", "f", "f", "f", "f", "f"],
-        ["f", "f", "f", "v", "v", "f", "f", "f"],
-        ["f", "f", "f", "v", "v", "f", "f", "f"],
-        ["f", "f", "f", "f", "f", "f", "f", "f"],
-        ["f", "f", "f", "f", "f", "f", "f", "f"],
-        ["f", "f", "f", "f", "f", "f", "f", "f"],
-        ["f", "f", "f", "f", "f", "f", "f", "f"],
-      ],
-    },
-    movie: {
-      _id: "1ssdsd",
-      name: "Не грози южному централу",
-      length: "120 минут",
-      img: ".adress",
-    },
-  },
-];
-
-const sellingStatus = false;

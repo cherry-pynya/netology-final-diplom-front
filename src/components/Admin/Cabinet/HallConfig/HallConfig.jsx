@@ -8,7 +8,7 @@ export default function HallConfig() {
   const [closed, setClosed] = useState(false);
   const [hall, setHall] = useState(null);
   const [form, setForm] = useState({
-    id: null,
+    _id: null,
     seats: [],
     row: "",
     col: "",
@@ -18,8 +18,8 @@ export default function HallConfig() {
   useState(() => {
     if (halls.length > 0) {
       setHall(halls[0]);
-      const { id, seats, row, col } = halls[0];
-      setForm({ id, seats, row, col });
+      const { _id, seats, row, col } = halls[0];
+      setForm({ _id, seats, row, col });
     }
   }, []);
 
@@ -27,8 +27,8 @@ export default function HallConfig() {
     setClosed(!closed);
   };
 
-  const pickHall = (id) => {
-    const item = halls.find((el) => el.id === id);
+  const pickHall = (_id) => {
+    const item = halls.find((el) => el._id === _id);
     if (item) {
         const {row, col} = item;
         setHall({...item});
@@ -39,8 +39,8 @@ export default function HallConfig() {
   };
 
   const pushHall = () => {
-    const { id } = hall;
-    const elem = halls.find((el) => el.id === id);
+    const { _id } = hall;
+    const elem = halls.find((el) => el._id === _id);
     const index = halls.indexOf(elem);
     halls.splice(index, 1, hall);
   };
@@ -64,7 +64,6 @@ export default function HallConfig() {
       hall.seats = hall.seats.slice(0, number);
       hall.row = number;
     } else if (number > row) {
-      console.log(number, row);
       hall.row = number;
       let newRow = [];
       for (let i = 0; i < col; i++) {
@@ -98,7 +97,6 @@ export default function HallConfig() {
       }
       hall.col = number;
     } else if (number < hall.seats[0].length) {
-      console.log(1);
       for (let i = 0; i < hall.seats.length; i++) {
         hall.seats[i] = hall.seats[i].slice(0, number);
       }
@@ -149,8 +147,8 @@ export default function HallConfig() {
               <HallPicker
                 item={el}
                 pickHall={pickHall}
-                hall={hall.id}
-                key={el.id}
+                hall={hall._id}
+                key={el._id}
               />
             ))}
           </ul>
@@ -216,10 +214,10 @@ HallConfig.propTypes = {
 };
 
 function HallPicker({ item, pickHall, hall }) {
-  const { number, id } = item;
-  const check = id === hall;
+  const { number, _id } = item;
+  const check = _id === hall;
   const change = () => {
-    pickHall(id);
+    pickHall(_id);
   };
   return (
     <li>
@@ -240,7 +238,7 @@ function HallPicker({ item, pickHall, hall }) {
 HallPicker.propTypes = {
   item: PropTypes.object,
   pickHall: PropTypes.func,
-  hall: PropTypes.number,
+  hall: PropTypes.string,
 };
 
 function SeatsPicker({ hall, chnangSeat }) {

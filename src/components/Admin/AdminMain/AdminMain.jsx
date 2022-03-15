@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import AdminContext from "../../../contex/Admin/AdminContext";
 import "../../../css/admin/styles.css";
 import "../../../css/admin/normalize.css";
 import { useEffect } from "react";
@@ -11,11 +13,14 @@ import MovieConfig from "../Cabinet/MovieConfig/MovieConfig";
 import SellingStatus from "../Cabinet/SellingsStatus/SellingStatus";
 
 export default function AdminMain() {
+  const { appStatus, pending, error, success } = useContext(AdminContext);
+
   useEffect(() => {
     document.body.classList.remove();
     document.body.classList.add('admin-body');
   }, [])
-  return (
+  
+  if (appStatus === success) return (
     <Main>
       <AdminHeader />
       <HallManager />
@@ -23,6 +28,24 @@ export default function AdminMain() {
       <PriceConfig />
       <MovieConfig />
       <SellingStatus />
+    </Main>
+  );
+
+  if (appStatus === error) return (
+    <Main>
+      <AdminHeader />
+      <span>
+        ошибка
+      </span>
+    </Main>
+  );
+
+  if (appStatus === pending) return (
+    <Main>
+      <AdminHeader />
+      <span>
+        загрузка
+      </span>
     </Main>
   );
 };
