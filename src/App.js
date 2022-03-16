@@ -5,6 +5,7 @@ import GuestMain from "./components/Guest/GuestMain/GuestMain";
 import GuestProvider from "./contex/Guest/GuestProvider";
 import AdminMain from "./components/Admin/AdminMain/AdminMain";
 import AdminProvider from "./contex/Admin/AdminProvider";
+import HallAdd from "./components/Admin/Cabinet/Popup/HallAdd/HallAdd";
 
 function App() {
   return (
@@ -16,13 +17,14 @@ function App() {
           </Routes>
         </Router>
       </GuestProvider>
-      <AdminProvider>
-        <Router>
+      <Router>
+        <AdminProvider>
+          <HallAdd />
           <Routes>
             <Route path="/admin" element={<AdminMain />} />
           </Routes>
-        </Router>
-      </AdminProvider>
+        </AdminProvider>
+      </Router>
     </AuthProvider>
   );
 }

@@ -7,9 +7,14 @@ import { nanoid } from "nanoid";
 export default function HallManager() {
   const { halls } = useContext(AdminContext);
   const [closed, setClosed] = useState(false);
+  const { hallAddPopup, setHallAddPopup } = useContext(AdminContext);
 
   const toggle = () => {
     setClosed(!closed);
+  };
+
+  const click = () => {
+    setHallAddPopup(!hallAddPopup);
   };
   
   return (
@@ -25,7 +30,7 @@ export default function HallManager() {
         <ul className="conf-step__list">
             {halls.map((el) => <Hall obj={el} key={nanoid()} />)}
         </ul>
-        <button className="conf-step__button conf-step__button-accent">
+        <button className="conf-step__button conf-step__button-accent" onClick={click}>
           Создать зал
         </button>
       </div>
@@ -38,11 +43,12 @@ HallManager.propTypes = {
 }
 
 function Hall({ obj }) {
-  const { number } = obj;
+  const { deleteHall } = useContext(AdminContext);
+  const { number, _id } = obj;
   return (
     <li>
       {`Зал ${number}`}
-      <button className="conf-step__button conf-step__button-trash"></button>
+      <button className="conf-step__button conf-step__button-trash" onClick={() => deleteHall(_id)}></button>
     </li>
   );
 }

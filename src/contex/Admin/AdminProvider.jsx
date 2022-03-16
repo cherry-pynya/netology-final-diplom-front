@@ -2,17 +2,67 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import AdminContext from "./AdminContext";
 import giveMeTheShow from "../../utils/giveMeTheShow";
+import { useNavigate } from 'react-router-dom';
+
 
 export default function AdminProvider(props) {
   const pending = process.env.PENDING || "pending";
   const error = process.env.ERROR || "error";
   const success = process.env.SUCCESS || "success";
+  const navigate = useNavigate();
   const [login, setLogin] = useState(false);
   const [halls, setHalls] = useState([]);
   const [movies, setMovies] = useState([]);
   const [showTimes, setShowTimes] = useState([]);
   const [sellingStatus, setSellingStatus] = useState(false);
   const [appStatus, setAppStatus] = useState(success);
+  const [hallAddPopup, setHallAddPopup] = useState(false);
+
+  const deleteHall = (_id) => {
+    setAppStatus(pending);
+    try {
+      const url =
+        process.env.DELETEHALL || "http://localhost:4000/data/deleteHall";
+      fetch(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({_id}),
+      }).then(() => {
+        setAppStatus(success);
+        getSchedule();
+      });
+    } catch (e) {
+      setAppStatus(error);
+      console.log(e);
+    }
+  }
+
+  const createHall = (number) => {
+    setHallAddPopup(false);
+    setAppStatus(pending);
+    try {
+      const url =
+        process.env.CREATEHALL || "http://localhost:4000/data/createHall";
+      fetch(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({number}),
+      }).then(() => {
+        setAppStatus(success);
+        getSchedule();
+        navigate('/admin');
+      });
+    } catch (e) {
+      setAppStatus(error);
+      console.log(e);
+    }
+  };
 
   const getSchedule = () => {
     const url = process.env.SCHEDULE || "http://localhost:4000/data/schedule";
@@ -35,8 +85,8 @@ export default function AdminProvider(props) {
 
   useEffect(() => {
     try {
-        setAppStatus(pending);
-        getSchedule();
+      setAppStatus(pending);
+      getSchedule();
     } catch (e) {
       setAppStatus(error);
       console.log(e);
@@ -59,7 +109,11 @@ export default function AdminProvider(props) {
         appStatus,
         pending,
         error,
-        success
+        success,
+        hallAddPopup,
+        setHallAddPopup,
+        createHall,
+        deleteHall
       }}
     >
       {props.children}
