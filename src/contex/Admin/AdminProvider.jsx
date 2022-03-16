@@ -2,8 +2,7 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import AdminContext from "./AdminContext";
 import giveMeTheShow from "../../utils/giveMeTheShow";
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate } from "react-router-dom";
 
 export default function AdminProvider(props) {
   const pending = process.env.PENDING || "pending";
@@ -11,12 +10,42 @@ export default function AdminProvider(props) {
   const success = process.env.SUCCESS || "success";
   const navigate = useNavigate();
   const [login, setLogin] = useState(false);
+  const [token, setToken] = useState(null);
   const [halls, setHalls] = useState([]);
   const [movies, setMovies] = useState([]);
   const [showTimes, setShowTimes] = useState([]);
   const [sellingStatus, setSellingStatus] = useState(false);
   const [appStatus, setAppStatus] = useState(success);
   const [hallAddPopup, setHallAddPopup] = useState(false);
+
+  const auth = (form) => {
+    const { login, password } = form;
+    setAppStatus(pending);
+    try {
+      const url = process.env.AUTH || "http://localhost:4000/auth/login";
+      fetch(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ login, password }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          const { token } = data;
+          setToken(token);
+          setAppStatus(success);
+          getSchedule();
+          setLogin(true);
+          console.log(token)
+          localStorage.setItem("adminToken", token);
+        });
+    } catch (e) {
+      setAppStatus(error);
+      console.log(e);
+    }
+  };
 
   const deleteHall = (_id) => {
     setAppStatus(pending);
@@ -28,8 +57,9 @@ export default function AdminProvider(props) {
         mode: "cors",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({_id}),
+        body: JSON.stringify({ _id }),
       }).then(() => {
         setAppStatus(success);
         getSchedule();
@@ -38,7 +68,7 @@ export default function AdminProvider(props) {
       setAppStatus(error);
       console.log(e);
     }
-  }
+  };
 
   const createHall = (number) => {
     setHallAddPopup(false);
@@ -51,12 +81,13 @@ export default function AdminProvider(props) {
         mode: "cors",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({number}),
+        body: JSON.stringify({ number }),
       }).then(() => {
         setAppStatus(success);
         getSchedule();
-        navigate('/admin');
+        navigate("/admin");
       });
     } catch (e) {
       setAppStatus(error);
@@ -69,6 +100,7 @@ export default function AdminProvider(props) {
     fetch(url, {
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
         Accept: "application/json",
       },
     })
@@ -85,7 +117,6 @@ export default function AdminProvider(props) {
 
   useEffect(() => {
     try {
-      setAppStatus(pending);
       getSchedule();
     } catch (e) {
       setAppStatus(error);
@@ -113,7 +144,8 @@ export default function AdminProvider(props) {
         hallAddPopup,
         setHallAddPopup,
         createHall,
-        deleteHall
+        deleteHall,
+        auth,
       }}
     >
       {props.children}
