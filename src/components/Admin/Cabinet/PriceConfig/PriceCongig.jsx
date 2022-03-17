@@ -6,13 +6,15 @@ import { nanoid } from "nanoid";
 import { useEffect } from "react";
 
 export default function PriceConfig() {
-  const { halls } = useContext(AdminContext);
-  const [closed, setClosed] = useState(false);
-  const [hall, setHall] = useState(null);
-  const [form, setForm] = useState({
+  const init = {
     vipPrice: 0,
     price: 0,
-  });
+  };
+  const { halls, setHalls, saveHallConfig } = useContext(AdminContext);
+  const [closed, setClosed] = useState(false);
+  const [hall, setHall] = useState(null);
+  const [form, setForm] = useState(init);
+  const [backup, setBackup] = useState([]);
 
   const close = () => {
     setClosed(!closed);
@@ -25,7 +27,7 @@ export default function PriceConfig() {
       [name]: value,
     });
     halls.forEach((el) => {
-        if (el.id === hall) {
+        if (el._id === hall) {
             el[name] = value;
         }
     });
@@ -33,7 +35,12 @@ export default function PriceConfig() {
 
   useEffect(() => {
     if (halls.length > 0) {
-      setHall(halls[0].id);
+      const arr = [];
+      for (let i = 0; i < halls.length; i++) {
+        arr.push({ ...halls[i] });
+      };
+      setBackup(arr);
+      setHall(halls[0]._id);
       setForm({
         vipPrice: halls[0].vipPrice,
         price: halls[0].price,
@@ -41,9 +48,9 @@ export default function PriceConfig() {
     }
   }, []);
 
-  const pickHall = (id) => {
-    setHall(id);
-    const item = halls.find((el) => el.id === id);
+  const pickHall = (_id) => {
+    setHall(_id);
+    const item = halls.find((el) => el._id === _id);
     const { price, vipPrice } = item;
     setForm({
         price, vipPrice
@@ -51,11 +58,13 @@ export default function PriceConfig() {
   };
 
   const cancel = () => {
-    console.log('cancel');
+    setForm(init);
+    setHalls(backup);
   };
 
-  const submit = () => {
-    console.log(halls);
+  const submit = (e) => {
+    e.preventDefault();
+    saveHallConfig(halls);
   };
 
   if (halls.length === 0)
@@ -153,10 +162,10 @@ PriceConfig.propTypes = {
 };
 
 function Hall({ item, hall, pickHall }) {
-  const { number, id } = item;
-  const check = id === hall;
+  const { number, _id } = item;
+  const check = _id === hall;
   const click = () => {
-    pickHall(id);
+    pickHall(_id);
   };
   return (
     <li>

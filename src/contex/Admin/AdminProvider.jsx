@@ -17,6 +17,8 @@ export default function AdminProvider(props) {
   const [sellingStatus, setSellingStatus] = useState(false);
   const [appStatus, setAppStatus] = useState(success);
   const [hallAddPopup, setHallAddPopup] = useState(false);
+  const [movieAddPopup, setMovieAddPopup] = useState(false);
+  const [showtimeAddPopup, setshowtimeAddPopup] = useState(false);
 
   const auth = (form) => {
     const { login, password } = form;
@@ -38,7 +40,6 @@ export default function AdminProvider(props) {
           setAppStatus(success);
           getSchedule();
           setLogin(true);
-          console.log(token)
           localStorage.setItem("adminToken", token);
         });
     } catch (e) {
@@ -92,36 +93,86 @@ export default function AdminProvider(props) {
     } catch (e) {
       setAppStatus(error);
       console.log(e);
-    }
+    };
+  };
+
+  const addMovie = (name) => {
+    setMovieAddPopup(false);
+    setAppStatus(pending);
+    try {
+      const url =
+        process.env.ADDMOVIE || "http://localhost:4000/data/addMovie";
+      fetch(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name }),
+      }).then(() => {
+        setAppStatus(success);
+        getSchedule();
+        navigate("/admin");
+      });
+    } catch (e) {
+      setAppStatus(error);
+      console.log(e);
+    };
+  };
+
+  const saveHallConfig = (halls) => {
+    setAppStatus(pending);
+    try {
+      const url =
+        process.env.SAVEHALLCONFIG || "http://localhost:4000/data/saveHallConfig";
+      fetch(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ halls }),
+      }).then(() => {
+        setAppStatus(success);
+        getSchedule();
+        navigate("/admin");
+      });
+    } catch (e) {
+      setAppStatus(error);
+      console.log(e);
+    };
   };
 
   const getSchedule = () => {
-    const url = process.env.SCHEDULE || "http://localhost:4000/data/schedule";
-    fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        const { halls, movies, sellingStatus, showTimes } = data;
-        setHalls(halls);
-        setMovies(movies);
-        setSellingStatus(sellingStatus);
-        setShowTimes(giveMeTheShow(halls, movies, showTimes));
-        setAppStatus(success);
-      });
-  };
-
-  useEffect(() => {
+    setAppStatus(pending);
     try {
-      getSchedule();
+      const url = process.env.SCHEDULE || "http://localhost:4000/data/schedule";
+      fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const { halls, movies, sellingStatus, showTimes } = data;
+          setHalls(halls);
+          setMovies(movies);
+          setSellingStatus(sellingStatus);
+          setShowTimes(giveMeTheShow(halls, movies, showTimes));
+          setAppStatus(success);
+        });
     } catch (e) {
       setAppStatus(error);
       console.log(e);
     }
+  };
+
+  useEffect(() => {
+    getSchedule();
   }, []);
 
   return (
@@ -146,6 +197,11 @@ export default function AdminProvider(props) {
         createHall,
         deleteHall,
         auth,
+        getSchedule,
+        saveHallConfig,
+        movieAddPopup, setMovieAddPopup,
+        addMovie,
+        showtimeAddPopup, setshowtimeAddPopup
       }}
     >
       {props.children}

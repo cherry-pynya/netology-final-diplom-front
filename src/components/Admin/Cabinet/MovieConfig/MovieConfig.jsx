@@ -8,7 +8,7 @@ import { nanoid } from "nanoid";
 
 export default function MovieConfig() {
   const [closed, setClosed] = useState(false);
-  const { movies, setMovies, showTimes, setShowTimes, halls } =
+  const { movies, halls, setMovieAddPopup } =
     useContext(AdminContext);
 
   const close = () => {
@@ -22,7 +22,6 @@ export default function MovieConfig() {
   const submit = () => {
 
   };
-
   return (
     <section className="conf-step">
       <header
@@ -37,13 +36,13 @@ export default function MovieConfig() {
       </header>
       <div className="conf-step__wrapper">
         <p className="conf-step__paragraph">
-          <button className="conf-step__button conf-step__button-accent">
+          <button className="conf-step__button conf-step__button-accent" onClick={() => setMovieAddPopup(true)}>
             Добавить фильм
           </button>
         </p>
         <div className="conf-step__movies">
           {movies.map((item) => (
-            <Movie movie={item} key={item._id} />
+            <Movie movie={item} key={nanoid()} />
           ))}
         </div>
         <div className="conf-step__seances">
@@ -73,7 +72,7 @@ function Movie({ movie }) {
     <div className="conf-step__movie">
       <img className="conf-step__movie-poster" alt="poster" src={poster} />
       <h3 className="conf-step__movie-title">{name}</h3>
-      <p className="conf-step__movie-duration">{length}</p>
+      <p className="conf-step__movie-duration">{`${length} минут`}</p>
     </div>
   );
 }
@@ -83,7 +82,7 @@ Movie.propTypes = {
 };
 
 function ShowTime({ hall }) {
-  const { showTimes } = useContext(AdminContext);
+  const { showTimes, setshowtimeAddPopup } = useContext(AdminContext);
   const [show, setShow] = useState([]);
   const { number, _id } = hall;
 
@@ -91,8 +90,13 @@ function ShowTime({ hall }) {
     setShow(showTimes.filter((el) => el.hall._id === _id));
   }, []);
 
+  const click = (e) => {
+    e.stopPropagation();
+    setshowtimeAddPopup(true)
+  };
+
   return (
-    <div className="conf-step__seances-hall">
+    <div className="conf-step__seances-hall" onClick={click}>
       <h3 className="conf-step__seances-title">{`Зал ${number}`}</h3>
         {show.map((el) => <ShowTimeItem time={el.time} movie={el.movie} key={nanoid()} />)}
       <div className="conf-step__seances-timeline"></div>
@@ -103,6 +107,7 @@ function ShowTime({ hall }) {
 ShowTime.propTypes = {
     hall: PropTypes.object,
     showTimes: PropTypes.array,
+    setshowtimeAddPopup: PropTypes.func,
 };
 
 function ShowTimeItem({ time, movie }) {
@@ -116,8 +121,7 @@ function ShowTimeItem({ time, movie }) {
       const hours = +time.slice(0, 2);
       const mins = +time.slice(3, 5);
       setDist((hours * 60 + mins) * step);
-      const movieLength = +length.slice(0, 3);
-      setBoxWidth(movieLength * step)
+      setBoxWidth(length * step);
   }, []);
 
   return (

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AuthProvider from "./contex/Auth/AuthProvider";
 import GuestMain from "./components/Guest/GuestMain/GuestMain";
@@ -6,6 +6,8 @@ import GuestProvider from "./contex/Guest/GuestProvider";
 import AdminMain from "./components/Admin/AdminMain/AdminMain";
 import AdminProvider from "./contex/Admin/AdminProvider";
 import HallAdd from "./components/Admin/Cabinet/Popup/HallAdd/HallAdd";
+import MovieAdd from "./components/Admin/Cabinet/Popup/MovieAdd/MovieAdd";
+import ShowTimeAdd from "./components/Admin/Cabinet/Popup/ShowTimeAdd/ShowTimeAdd";
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
       <Router>
         <AdminProvider>
           <HallAdd />
+          <MovieAdd />
+          <ShowTimeAdd />
           <Routes>
             <Route path="/admin" element={<AdminMain />} />
           </Routes>

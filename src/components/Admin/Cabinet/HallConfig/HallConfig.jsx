@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useState } from "react";
 import AdminContext from "../../../../contex/Admin/AdminContext";
 import { nanoid } from "nanoid";
@@ -13,10 +13,16 @@ export default function HallConfig() {
     row: "",
     col: "",
   });
-  const { halls, setHalls } = useContext(AdminContext);
+  const { halls, setHalls, saveHallConfig } = useContext(AdminContext);
+  const [backup, setBackup] = useState([]);
 
-  useState(() => {
+  useEffect(() => {
     if (halls.length > 0) {
+      const arr = [];
+      for (let i = 0; i < halls.length; i++) {
+        arr.push({ ...halls[i] });
+      }
+      setBackup(arr);
       setHall(halls[0]);
       const { _id, seats, row, col } = halls[0];
       setForm({ _id, seats, row, col });
@@ -30,12 +36,12 @@ export default function HallConfig() {
   const pickHall = (_id) => {
     const item = halls.find((el) => el._id === _id);
     if (item) {
-        const {row, col} = item;
-        setHall({...item});
-        form.row = row;
-        form.col = col;
-        setForm({...form})
-    };
+      const { row, col } = item;
+      setHall({ ...item });
+      form.row = row;
+      form.col = col;
+      setForm({ ...form });
+    }
   };
 
   const pushHall = () => {
@@ -60,11 +66,10 @@ export default function HallConfig() {
 
   const changeNumberOfRows = (number) => {
     const { row, col } = hall;
+    hall.row = +number;
     if (number < row) {
       hall.seats = hall.seats.slice(0, number);
-      hall.row = number;
     } else if (number > row) {
-      hall.row = number;
       let newRow = [];
       for (let i = 0; i < col; i++) {
         newRow.push("f");
@@ -75,6 +80,7 @@ export default function HallConfig() {
       }
     }
     setHall({ ...hall });
+    pushHall();
   };
 
   const changeCol = (e) => {
@@ -91,21 +97,22 @@ export default function HallConfig() {
   };
 
   const changeNumberOfCols = (number) => {
-    if (number > hall.seats[0].length) {
-      for (let i = 0; i < hall.seats.length; i++) {
-        hall.seats[i].push("f");
-      }
-      hall.col = number;
-    } else if (number < hall.seats[0].length) {
-      for (let i = 0; i < hall.seats.length; i++) {
-        hall.seats[i] = hall.seats[i].slice(0, number);
-      }
-      hall.col = number;
+    hall.col = +number;
+    const { row } = hall;
+    const newSeats = [];
+    const arr = [];
+    for (let i = 0; i < +number; i++) {
+      arr.push("f");
     }
+    for (let i = 0; i < row; i++) {
+      newSeats.push(arr);
+    }
+    hall.seats = newSeats;
     setHall({ ...hall });
+    pushHall();
   };
 
-  const chnangSeat = (row, col) => {
+  const chnangeSeat = (row, col) => {
     const now = hall.seats[row][col];
     if (now === "x") {
       hall.seats[row][col] = "f";
@@ -119,13 +126,16 @@ export default function HallConfig() {
   };
 
   const cancel = () => {
-    console.log('Возвращаем hall из контекста');
+    setHalls(backup);
+    setHall(backup[0]);
+    const { _id, seats, row, col } = backup[0];
+    setForm({_id, seats, row, col});
   };
 
-  const submit = () => {
-    setHalls(halls);
-  }
-
+  const submit = (e) => {
+    e.preventDefault();
+    saveHallConfig(halls);
+  };
 
   return (
     <section className="conf-step">
@@ -187,9 +197,12 @@ export default function HallConfig() {
           </div>
           <SeatsInformationPermission />
           <SeatsInformation />
-          <SeatsPicker hall={hall} chnangSeat={chnangSeat} />
+          <SeatsPicker hall={hall} chnangeSeat={chnangeSeat} />
           <fieldset className="conf-step__buttons text-center">
-            <button className="conf-step__button conf-step__button-regular" onClick={cancel}>
+            <button
+              className="conf-step__button conf-step__button-regular"
+              onClick={cancel}
+            >
               Отмена
             </button>
             <input
@@ -241,13 +254,17 @@ HallPicker.propTypes = {
   hall: PropTypes.string,
 };
 
-function SeatsPicker({ hall, chnangSeat }) {
+function SeatsPicker({ hall, chnangeSeat }) {
   const { seats } = hall;
+  const click = (e) => {
+    const { row, col } = e.target.closest('.conf-step__chair').dataset;
+    chnangeSeat(col, row);
+  };
   return (
     <div className="conf-step__hall">
-      <div className="conf-step__hall-wrapper">
+      <div className="conf-step__hall-wrapper" onClick={click}>
         {seats.map((item, index) => (
-          <Row arr={item} key={nanoid()} col={index} chnangSeat={chnangSeat} />
+          <Row arr={item} key={nanoid()} col={index} />
         ))}
       </div>
     </div>
@@ -256,10 +273,10 @@ function SeatsPicker({ hall, chnangSeat }) {
 
 SeatsPicker.propTypes = {
   hall: PropTypes.object,
-  chnangSeat: PropTypes.func,
+  chnangeSeat: PropTypes.func,
 };
 
-function Row({ arr, col, chnangSeat }) {
+function Row({ arr, col }) {
   return (
     <div className="conf-step__row">
       {arr.map((letter, index) => (
@@ -268,7 +285,6 @@ function Row({ arr, col, chnangSeat }) {
           letter={letter}
           col={col}
           row={index}
-          chnangSeat={chnangSeat}
         />
       ))}
     </div>
@@ -278,10 +294,9 @@ function Row({ arr, col, chnangSeat }) {
 Row.propTypes = {
   arr: PropTypes.array,
   col: PropTypes.number,
-  chnangSeat: PropTypes.func,
 };
 
-function Seat({ letter, col, row, chnangSeat }) {
+function Seat({ letter, col, row }) {
   let status = "";
   if (letter === "x") {
     status = "disabled";
@@ -290,13 +305,11 @@ function Seat({ letter, col, row, chnangSeat }) {
   } else {
     status = "vip";
   }
-  const click = () => {
-    chnangSeat(col, row);
-  };
   return (
     <span
+      data-row={row}
+      data-col={col}
       className={`conf-step__chair conf-step__chair_${status}`}
-      onClick={click}
     ></span>
   );
 }
@@ -305,7 +318,6 @@ Seat.propTypes = {
   letter: PropTypes.string,
   col: PropTypes.number,
   row: PropTypes.number,
-  chnangSeat: PropTypes.func,
 };
 
 function SeatsInformation() {
@@ -330,4 +342,4 @@ function SeatsInformationPermission() {
       Теперь вы можете указать типы кресел на схеме зала:
     </p>
   );
-};
+}
