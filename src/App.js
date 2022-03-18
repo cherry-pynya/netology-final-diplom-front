@@ -8,6 +8,7 @@ import AdminProvider from "./contex/Admin/AdminProvider";
 import HallAdd from "./components/Admin/Cabinet/Popup/HallAdd/HallAdd";
 import MovieAdd from "./components/Admin/Cabinet/Popup/MovieAdd/MovieAdd";
 import ShowTimeAdd from "./components/Admin/Cabinet/Popup/ShowTimeAdd/ShowTimeAdd";
+import ShowTimeDelte from "./components/Admin/Cabinet/Popup/ShowTimeDelete/ShowTimeDelete";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       </GuestProvider>
       <Router>
         <AdminProvider>
+          <ShowTimeDelte />
           <HallAdd />
           <MovieAdd />
           <ShowTimeAdd />

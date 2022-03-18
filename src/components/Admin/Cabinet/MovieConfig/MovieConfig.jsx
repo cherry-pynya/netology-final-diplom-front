@@ -8,20 +8,28 @@ import { nanoid } from "nanoid";
 
 export default function MovieConfig() {
   const [closed, setClosed] = useState(false);
-  const { movies, halls, setMovieAddPopup } =
-    useContext(AdminContext);
+  const [backup, setBackup] = useState([]);
+  const { movies, halls, setMovieAddPopup, showTimes, setShowTimes, saveShowTimes } = useContext(AdminContext);
+
+  useEffect(() => {
+    showTimes.forEach((el) => {
+      backup.push({...el});
+    });
+    setBackup([...backup]);
+  }, []);
 
   const close = () => {
     setClosed(!closed);
   };
 
   const cancel = () => {
-
+    setShowTimes(backup);
   };
 
   const submit = () => {
-
+    saveShowTimes(showTimes);
   };
+
   return (
     <section className="conf-step">
       <header
@@ -36,7 +44,10 @@ export default function MovieConfig() {
       </header>
       <div className="conf-step__wrapper">
         <p className="conf-step__paragraph">
-          <button className="conf-step__button conf-step__button-accent" onClick={() => setMovieAddPopup(true)}>
+          <button
+            className="conf-step__button conf-step__button-accent"
+            onClick={() => setMovieAddPopup(true)}
+          >
             Добавить фильм
           </button>
         </p>
@@ -51,9 +62,19 @@ export default function MovieConfig() {
           ))}
         </div>
         <fieldset className="conf-step__buttons text-center">
-          <button className="conf-step__button conf-step__button-regular" onClick={cancel}>Отмена</button>
-          <input type="submit" value="Сохранить" className="conf-step__button conf-step__button-accent" onClick={submit} />
-        </fieldset> 
+          <button
+            className="conf-step__button conf-step__button-regular"
+            onClick={cancel}
+          >
+            Отмена
+          </button>
+          <input
+            type="submit"
+            value="Сохранить"
+            className="conf-step__button conf-step__button-accent"
+            onClick={submit}
+          />
+        </fieldset>
       </div>
     </section>
   );
@@ -64,6 +85,9 @@ MovieConfig.propTypes = {
   setMovies: PropTypes.func,
   showTime: PropTypes.array,
   setShowTime: PropTypes.func,
+  showTimes: PropTypes.array,
+  setShowTimes: PropTypes.func,
+  saveShowTimes: PropTypes.func
 };
 
 function Movie({ movie }) {
@@ -91,59 +115,75 @@ function ShowTime({ hall }) {
   }, []);
 
   const click = (e) => {
-    e.stopPropagation();
-    setshowtimeAddPopup(true)
+    setshowtimeAddPopup(true);
   };
 
   return (
     <div className="conf-step__seances-hall" onClick={click}>
       <h3 className="conf-step__seances-title">{`Зал ${number}`}</h3>
-        {show.map((el) => <ShowTimeItem time={el.time} movie={el.movie} key={nanoid()} />)}
-      <div className="conf-step__seances-timeline"></div>
+
+      <div className="conf-step__seances-timeline">
+        {show.map((el) => (
+          <ShowTimeItem el={el} time={el.time} movie={el.movie} key={nanoid()} />
+        ))}
+      </div>
     </div>
   );
-};
+}
 
 ShowTime.propTypes = {
-    hall: PropTypes.object,
-    showTimes: PropTypes.array,
-    setshowtimeAddPopup: PropTypes.func,
+  hall: PropTypes.object,
+  showTimes: PropTypes.array,
+  setshowtimeAddPopup: PropTypes.func,
 };
 
-function ShowTimeItem({ time, movie }) {
+function ShowTimeItem({ time, movie, el }) {
   const { name, length } = movie;
   const [dist, setDist] = useState(0);
   const [boxWidth, setBoxWidth] = useState(0);
-  
+  const { setshowtimeDeletePopup, setDeleteShowTime } =
+    useContext(AdminContext);
+
   useEffect(() => {
-      const width = document.querySelector('.conf-step__seances-timeline').offsetWidth;
-      const step = ((width - 60) / 1440).toFixed(2);
-      const hours = +time.slice(0, 2);
-      const mins = +time.slice(3, 5);
-      setDist((hours * 60 + mins) * step);
-      setBoxWidth(length * step);
+    const width = document.querySelector(
+      ".conf-step__seances-timeline"
+    ).offsetWidth;
+    const step = ((width - 60) / 1440).toFixed(2);
+    const hours = +time.slice(0, 2);
+    const mins = +time.slice(3, 5);
+    setDist((hours * 60 + mins) * step);
+    setBoxWidth(length * step);
   }, []);
+
+  const click = (e) => {
+    e.stopPropagation();
+    console.log(el)
+    setDeleteShowTime(el);
+    setshowtimeDeletePopup(true);
+  };
 
   return (
     <div
-    className="conf-step__seances-movie"
+      className="conf-step__seances-movie"
       style={{
-          width: `${boxWidth}px`,
-          backgroundColor: 'rgb(133, 255, 137)',
-          left: `${dist}px`,
-          height: 'auto',
+        width: `${boxWidth}px`,
+        backgroundColor: "rgb(133, 255, 137)",
+        left: `${dist}px`,
+        height: "auto",
       }}
+      onClick={click}
     >
       <p className="conf-step__seances-movie-title">{name}</p>
       <p className="conf-step__seances-movie-start">{time}</p>
     </div>
   );
-};
+}
 
 ShowTimeItem.propTypes = {
-    time: PropTypes.string,
-    movie: PropTypes.object,
+  time: PropTypes.string,
+  movie: PropTypes.object,
+  el: PropTypes.object,
+  setshowtimeDeletePopup: PropTypes.func,
+  setDeleteShowTime: PropTypes.func,
+  showTimes: PropTypes.array
 };
-
-
-

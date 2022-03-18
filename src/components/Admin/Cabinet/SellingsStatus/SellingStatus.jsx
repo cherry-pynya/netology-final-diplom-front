@@ -1,18 +1,19 @@
 import { useContext } from "react";
 import { useState } from "react";
+import PropTypes from 'prop-types';
 import AdminContext from "../../../../contex/Admin/AdminContext";
-import PropTypes from "prop-types";
-import { useEffect } from "react";
-import poster from "../../../../asets/admin/poster.png";
-import { nanoid } from "nanoid";
 
 export default function SellingStatus() {
   const [closed, setClosed] = useState(false);
 
-  const { sellingStatus, setSellingStatus } = useContext(AdminContext)
+  const { sellingStatus, changeSellingStatus } = useContext(AdminContext);
 
   const close = () => {
     setClosed(!closed);
+  };
+
+  const click = () => {
+    changeSellingStatus(!sellingStatus);
   };
 
   return (
@@ -27,10 +28,15 @@ export default function SellingStatus() {
       </header>
       <div className="conf-step__wrapper text-center">
         <p className="conf-step__paragraph">Всё готово, теперь можно:</p>
-        <button className="conf-step__button conf-step__button-accent">
-          {sellingStatus ? 'Открыть продажу билетов' : "Закрыть продажу билетов"}
+        <button className="conf-step__button conf-step__button-accent" onClick={click}>
+          {!sellingStatus ? 'Открыть продажу билетов' : "Закрыть продажу билетов"}
         </button>
       </div>
     </section>
   );
-}
+};
+
+SellingStatus.propTypes = {
+  sellingStatus: PropTypes.bool,
+  changeSellingStatus: PropTypes.func,
+};

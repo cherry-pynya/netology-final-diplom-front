@@ -10,9 +10,7 @@ export default function Login() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({
-        [name]: value
-    });
+    setForm((values) => ({ ...values, [name]: value }));
   };
 
   const submit = (e) => {

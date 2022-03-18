@@ -1,9 +1,11 @@
 import { useContext, useState } from "react";
+import PropTypes from 'prop-types';
 import Popup from "../Popup";
 import AdminContext from "../../../../../contex/Admin/AdminContext";
 import close from "../../../../../asets/admin/close.png";
-import { useEffect } from "react";
 import { nanoid } from "nanoid";
+import giveMeTheShow from "../../../../../utils/giveMeTheShow";
+import checkTimeFit from "../../../../../utils/checkTimeFit";
 
 export default function ShowTimeAdd() {
   const { showtimeAddPopup, setshowtimeAddPopup } = useContext(AdminContext);
@@ -13,30 +15,40 @@ export default function ShowTimeAdd() {
       <ShowTimeAddContent setshowtimeAddPopup={setshowtimeAddPopup} />
     </Popup>
   );
-}
+};
 
-function ShowTimeAddContent({ setMovieAddPopup }) {
+ShowTimeAdd.propTypes = {
+    showtimeAddPopup: PropTypes.bool,
+    setshowtimeAddPopup: PropTypes.func
+};
+
+function ShowTimeAddContent({ setshowtimeAddPopup }) {
+  const { movies, halls, setShowTimes, showTimes } = useContext(AdminContext);
   const init = {
     hall: "",
     time: "00:00",
     movie: "",
   };
-  const { movies, halls, setshowtimeAddPopup } = useContext(AdminContext);
   const [form, setForm] = useState(init);
 
   const cancel = (e) => {
     e.preventDefault();
+    setForm(init);
     setshowtimeAddPopup(false);
   };
 
   const submit = (e) => {
     e.preventDefault();
+    const { hall, movie, time } = form;
+    if (hall !== "" && movie !== "") {
+      const st = showTimes.filter((el) => el.hall === hall);
+      if (!checkTimeFit(time, movies.find((el) => el._id === movie), st)) return false;
+      const arr = giveMeTheShow(halls, movies, [form]);
+      setShowTimes([...arr, ...showTimes]);
+      setshowtimeAddPopup(false);
+    }
     setForm(init);
   };
-
-  useEffect(() => {
-      setForm(init);
-  }, []);
 
   const handleChange = (event) => {
     const target = event.target;
@@ -44,6 +56,18 @@ function ShowTimeAddContent({ setMovieAddPopup }) {
     const name = target.name;
     setForm((values) => ({ ...values, [name]: value }));
   };
+
+  if (halls.length === 0 || movies.length === 0) {
+    return (
+      <div className="popup__content">
+        <div className="popup__header">
+          <h2 className="popup__title">
+            Нет доступных варинтов создания сеансов!
+          </h2>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="popup__content">
@@ -75,9 +99,15 @@ function ShowTimeAddContent({ setMovieAddPopup }) {
               name="hall"
               required
               onChange={handleChange}
+              value={form.hall}
             >
-              {halls.map((el) => (
-                <Option _id={el._id} key={nanoid()} name={`Зал ${el.number}`} />
+              <Option key={nanoid()} _id={''} name='-' />
+              {halls.map((el, index) => (
+                <Option 
+                  _id={el._id}
+                  key={nanoid()}
+                  name={`Зал ${el.number}`}
+                />
               ))}
             </select>
           </label>
@@ -106,9 +136,15 @@ function ShowTimeAddContent({ setMovieAddPopup }) {
               name="movie"
               required
               onChange={handleChange}
+              value={form.movie}
             >
-              {movies.map((el) => (
-                <Option _id={el._id} key={nanoid()} name={el.name} />
+              <Option key={nanoid()} _id={''} name='-' />
+              {movies.map((el, index) => (
+                <Option
+                  _id={el._id}
+                  key={nanoid()}
+                  name={el.name}
+                />
               ))}
             </select>
           </label>
@@ -131,8 +167,21 @@ function ShowTimeAddContent({ setMovieAddPopup }) {
       </div>
     </div>
   );
-}
+};
+
+ShowTimeAdd.ShowTimeAddContent = {
+    setshowtimeAddPopup: PropTypes.func,
+    movies: PropTypes.array,
+    halls: PropTypes.array,
+    setShowTimes: PropTypes.array,
+    showTimes: PropTypes.func,
+};
 
 function Option({ _id, name }) {
   return <option value={_id}>{name}</option>;
-}
+};
+
+Option.ShowTimeAddContent = {
+    name: PropTypes.string,
+    _id: PropTypes.string,
+};

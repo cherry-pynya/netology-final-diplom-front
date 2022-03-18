@@ -183,7 +183,7 @@ function Hall({ item, hall, pickHall }) {
 }
 
 Hall.propTypes = {
-  hall: PropTypes.number,
+  hall: PropTypes.string,
   item: PropTypes.object,
   pickHall: PropTypes.func,
 };

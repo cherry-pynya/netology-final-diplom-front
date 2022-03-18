@@ -14,15 +14,12 @@ export default function MovieAdd() {
     );
 }
 
-
-
-
 function MovieAddContent({setMovieAddPopup}) {
   const init = {
     name: '',
     length: ''
   }
-  const { movies, setMovies } = useContext(AdminContext);
+  const { movies, addMovie } = useContext(AdminContext);
   const [form, setForm] = useState(init);
 
   const cancel = (e) => {
@@ -34,9 +31,9 @@ function MovieAddContent({setMovieAddPopup}) {
     e.preventDefault();
     const {name, length} = form;
     if (name !== '' && length !== '') {
-      if (movies.filter((el) => el.name === name)) return false;
-      movies.push({name, length});
-      setMovies([...movies]);
+      if (movies.filter((el) => el.name === name).length !== 0) return false;
+      addMovie( name, length );
+      setForm(init);
       setMovieAddPopup(false);
     };
   };

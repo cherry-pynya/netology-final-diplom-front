@@ -19,6 +19,8 @@ export default function AdminProvider(props) {
   const [hallAddPopup, setHallAddPopup] = useState(false);
   const [movieAddPopup, setMovieAddPopup] = useState(false);
   const [showtimeAddPopup, setshowtimeAddPopup] = useState(false);
+  const [showtimeDeletePopup, setshowtimeDeletePopup] = useState(false);
+  const [deleteShowTime, setDeleteShowTime] = useState(null);
 
   const auth = (form) => {
     const { login, password } = form;
@@ -93,15 +95,14 @@ export default function AdminProvider(props) {
     } catch (e) {
       setAppStatus(error);
       console.log(e);
-    };
+    }
   };
 
-  const addMovie = (name) => {
+  const addMovie = (name, length) => {
     setMovieAddPopup(false);
     setAppStatus(pending);
     try {
-      const url =
-        process.env.ADDMOVIE || "http://localhost:4000/data/addMovie";
+      const url = process.env.ADDMOVIE || "http://localhost:4000/data/addMovie";
       fetch(url, {
         method: "POST",
         mode: "cors",
@@ -109,7 +110,7 @@ export default function AdminProvider(props) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, length }),
       }).then(() => {
         setAppStatus(success);
         getSchedule();
@@ -118,14 +119,15 @@ export default function AdminProvider(props) {
     } catch (e) {
       setAppStatus(error);
       console.log(e);
-    };
+    }
   };
 
   const saveHallConfig = (halls) => {
     setAppStatus(pending);
     try {
       const url =
-        process.env.SAVEHALLCONFIG || "http://localhost:4000/data/saveHallConfig";
+        process.env.SAVEHALLCONFIG ||
+        "http://localhost:4000/data/saveHallConfig";
       fetch(url, {
         method: "POST",
         mode: "cors",
@@ -142,7 +144,56 @@ export default function AdminProvider(props) {
     } catch (e) {
       setAppStatus(error);
       console.log(e);
-    };
+    }
+  };
+
+  const saveShowTimes = (showTimes) => {
+    setAppStatus(pending);
+    try {
+      const url =
+        process.env.SAVESHOWTIMES || "http://localhost:4000/data/saveShowTimes";
+      fetch(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ showTimes }),
+      }).then(() => {
+        setAppStatus(success);
+        getSchedule();
+        navigate("/admin");
+      });
+    } catch (e) {
+      setAppStatus(error);
+      console.log(e);
+    }
+  };
+
+  const changeSellingStatus = (status) => {
+    setAppStatus(pending);
+    try {
+      const url =
+        process.env.CHANGESELLINGSTATUS ||
+        "http://localhost:4000/data/changeSellingStatus";
+      fetch(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      }).then(() => {
+        setAppStatus(success);
+        getSchedule();
+        navigate("/admin");
+      });
+    } catch (e) {
+      setAppStatus(error);
+      console.log(e);
+    }
   };
 
   const getSchedule = () => {
@@ -161,7 +212,7 @@ export default function AdminProvider(props) {
           const { halls, movies, sellingStatus, showTimes } = data;
           setHalls(halls);
           setMovies(movies);
-          setSellingStatus(sellingStatus);
+          setSellingStatus(sellingStatus.status);
           setShowTimes(giveMeTheShow(halls, movies, showTimes));
           setAppStatus(success);
         });
@@ -199,9 +250,17 @@ export default function AdminProvider(props) {
         auth,
         getSchedule,
         saveHallConfig,
-        movieAddPopup, setMovieAddPopup,
+        movieAddPopup,
+        setMovieAddPopup,
         addMovie,
-        showtimeAddPopup, setshowtimeAddPopup
+        showtimeAddPopup,
+        setshowtimeAddPopup,
+        showtimeDeletePopup,
+        setshowtimeDeletePopup,
+        deleteShowTime,
+        setDeleteShowTime,
+        saveShowTimes,
+        changeSellingStatus,
       }}
     >
       {props.children}
