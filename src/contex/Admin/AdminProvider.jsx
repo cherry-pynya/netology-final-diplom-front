@@ -98,7 +98,7 @@ export default function AdminProvider(props) {
     }
   };
 
-  const addMovie = (name, length) => {
+  const addMovie = (name, length, desc) => {
     setMovieAddPopup(false);
     setAppStatus(pending);
     try {
@@ -110,7 +110,7 @@ export default function AdminProvider(props) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, length }),
+        body: JSON.stringify({ name, length, desc }),
       }).then(() => {
         setAppStatus(success);
         getSchedule();
@@ -160,6 +160,30 @@ export default function AdminProvider(props) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ showTimes }),
+      }).then(() => {
+        setAppStatus(success);
+        getSchedule();
+        navigate("/admin");
+      });
+    } catch (e) {
+      setAppStatus(error);
+      console.log(e);
+    }
+  };
+
+  const deleteShowTimes = (_id) => {
+    setAppStatus(pending);
+    try {
+      const url =
+        process.env.SAVESHOWTIMES || "http://localhost:4000/data/deleteShowTimes";
+      fetch(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ _id }),
       }).then(() => {
         setAppStatus(success);
         getSchedule();
@@ -261,6 +285,7 @@ export default function AdminProvider(props) {
         setDeleteShowTime,
         saveShowTimes,
         changeSellingStatus,
+        deleteShowTimes
       }}
     >
       {props.children}

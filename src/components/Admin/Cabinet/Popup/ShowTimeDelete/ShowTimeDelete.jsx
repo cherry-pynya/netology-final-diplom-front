@@ -15,7 +15,7 @@ export default function ShowTimeDelte() {
 }
 
 function ShowTimeDelteContent({ setshowtimeDeletePopup }) {
-  const { deleteShowTime, setDeleteShowTime, showTimes, setShowTimes } = useContext(AdminContext);
+  const { deleteShowTime, setDeleteShowTime, showTimes, setShowTimes, deleteShowTimes } = useContext(AdminContext);
   
   const cancel = () => {
     setshowtimeDeletePopup(false);
@@ -26,6 +26,7 @@ function ShowTimeDelteContent({ setshowtimeDeletePopup }) {
     const index = showTimes.indexOf(deleteShowTime);
     showTimes.splice(index, 1);
     setShowTimes([...showTimes]);
+    deleteShowTimes(deleteShowTime._id);
     cancel();
   };
 

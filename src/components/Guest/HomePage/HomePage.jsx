@@ -6,15 +6,13 @@ import DatePicker from "../DatePicker/DatePicker";
 import HeaderGuest from "../Header/HeaderGuest";
 
 export default function HomePage() {
-  const {dates, currentDate, movies} = useContext(GuestContext);
+  const {showTimes} = useContext(GuestContext);
   return (
     <Main>
       <HeaderGuest />
       <DatePicker />
       <main>
-        {movies.map((el) => (
-          <Movie movie={el} key={el.id} />
-        ))}
+
       </main>
     </Main>
   );

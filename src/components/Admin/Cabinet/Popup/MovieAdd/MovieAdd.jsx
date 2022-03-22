@@ -17,7 +17,8 @@ export default function MovieAdd() {
 function MovieAddContent({setMovieAddPopup}) {
   const init = {
     name: '',
-    length: ''
+    length: '',
+    desc: '',
   }
   const { movies, addMovie } = useContext(AdminContext);
   const [form, setForm] = useState(init);
@@ -29,10 +30,10 @@ function MovieAddContent({setMovieAddPopup}) {
 
   const submit = (e) => {
     e.preventDefault();
-    const {name, length} = form;
+    const {name, length, desc} = form;
     if (name !== '' && length !== '') {
       if (movies.filter((el) => el.name === name).length !== 0) return false;
-      addMovie( name, length );
+      addMovie( name, length, desc );
       setForm(init);
       setMovieAddPopup(false);
     };
@@ -70,6 +71,17 @@ function MovieAddContent({setMovieAddPopup}) {
               name="name"
               onChange={handleChange}
               value={form.name}
+            />
+          </label>
+          <label className="conf-step__label conf-step__label-fullsize" htmlFor="desc">
+            Описание фильма
+            <input
+              className="conf-step__input"
+              type="text"
+              placeholder="Например, &laquo;Шла Саша по шоссе и сосала сушку...&raquo;"
+              name="desc"
+              onChange={handleChange}
+              value={form.desc}
             />
           </label>
           <label className="conf-step__label conf-step__label-fullsize" htmlFor="length">

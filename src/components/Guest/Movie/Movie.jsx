@@ -2,16 +2,16 @@ import poster1 from '../../../asets/client/poster1.jpg'
 import poster2 from '../../../asets/client/poster2.jpg'
 import { Link } from 'react-router-dom';
 import { nanoid } from 'nanoid';
-
-export default function Movie({movie}) {
-  const {alt, src, name, desc, duration, origin, halls } = movie;
+/** 
+export default function Movie({showTime}) {
+  const {hall, movie, time} = showTime;
   return (
     <section className="movie">
       <div className="movie__info">
         <div className="movie__poster">
           <img
             className="movie__poster-image"
-            alt={alt}
+            alt='постер к фильму '
             src={poster1}
           />
         </div>
@@ -45,7 +45,7 @@ function Hall({item}) {
 
 function HallItem({session}) {
     //ссылка должна вести на страницу выбора мест с айди фильма
-    const { id, time } = session;
+    const { time } = session;
     return (
         <li className="movie-seances__time-block">
             <Link className="movie-seances__time" to='/'>
@@ -54,3 +54,4 @@ function HallItem({session}) {
           </li>
     );
 }
+*/
