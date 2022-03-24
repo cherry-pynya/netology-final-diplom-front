@@ -4,24 +4,46 @@ import GuestContext from "./GuestContext";
 import PropTypes from "prop-types";
 import { useEffect } from "react";
 import datesFactory from "../../utils/datesFactory";
-import giveMeTheShow from "../../utils/giveMeTheShow";
 
 export default function GuestProvider(props) {
   const pending = process.env.PENDING || "pending";
   const error = process.env.ERROR || "error";
   const success = process.env.SUCCESS || "success";
   const [dates, setDates] = useState(datesFactory());
-  const [halls, setHalls] = useState([]);
-  const [movies, setMovies] = useState([]);
-  const [showTimes, setShowTimes] = useState([]);
+  const [customerEvents, setCustomerEvents] = useState([]);
   const [sellingStatus, setSellingStatus] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date().getDate());
   const [appStatus, setAppStatus] = useState(success);
+  const [displayedData, setDisplayedData] = useState([]);
+  const [hallForm, setHallForm] = useState({});
 
-  const getSchedule = () => {
+  const changeData = (d, e) => {
+    const today = d.find((el) => el.active).fullDate;
+    const arr = [];
+    const films = e.filter((el) => el.date === today);
+    const moviesIDs = {};
+    films.forEach((el) => {
+      if (el.movie._id in moviesIDs) {
+        moviesIDs[el.movie._id] += 1;
+      } else {
+        moviesIDs[el.movie._id] = 1;
+      }
+    });
+    for (let key in moviesIDs) {
+      const movieArr = films.filter((el) => {
+        if (el.movie._id === key) return true;
+        return false;
+      });
+      arr.push(movieArr);
+    };
+    setDisplayedData(arr);
+  };
+
+  const getCustomerData = () => {
     setAppStatus(pending);
     try {
-      const url = process.env.SCHEDULE || "http://localhost:4000/data/schedule";
+      const url =
+        process.env.SCHEDULE || "http://localhost:4000/data/getCustomerData";
       fetch(url, {
         headers: {
           "Content-Type": "application/json",
@@ -30,13 +52,14 @@ export default function GuestProvider(props) {
       })
         .then((response) => response.json())
         .then((data) => {
-          const { halls, movies, sellingStatus, showTimes } = data;
-          setHalls(halls);
-          setMovies(movies);
-          setSellingStatus(sellingStatus.status);
-          setShowTimes(giveMeTheShow(halls, movies, showTimes));
+          setCustomerEvents(data.customerEvents);
+          setSellingStatus(data.sellingStatus.status);
+          changeData(dates, data.customerEvents);
           setAppStatus(success);
-          setAppStatus(success);
+        })
+        .catch((e) => {
+          setAppStatus(error);
+          console.log(e);
         });
     } catch (e) {
       setAppStatus(error);
@@ -58,6 +81,7 @@ export default function GuestProvider(props) {
       }
     }
     setDates([...dates]);
+    changeData(dates, customerEvents);
   };
 
   const prevDay = () => {
@@ -74,6 +98,7 @@ export default function GuestProvider(props) {
       }
     }
     setDates([...dates]);
+    changeData(dates, customerEvents);
   };
 
   const chooseDate = (int) => {
@@ -85,11 +110,8 @@ export default function GuestProvider(props) {
       }
     });
     setDates([...dates]);
+    changeData(dates, customerEvents);
   };
-
-  useEffect(() => {
-    getSchedule();
-  }, []);
 
   return (
     <GuestContext.Provider
@@ -99,8 +121,16 @@ export default function GuestProvider(props) {
         nextDay,
         prevDay,
         chooseDate,
-        showTimes,
-        sellingStatus
+        sellingStatus,
+        customerEvents,
+        appStatus,
+        displayedData,
+        pending,
+        error,
+        success,
+        changeData,
+        getCustomerData,
+        hallForm, setHallForm
       }}
     >
       {props.children}
