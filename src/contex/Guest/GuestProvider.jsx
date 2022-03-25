@@ -16,6 +16,7 @@ export default function GuestProvider(props) {
   const [appStatus, setAppStatus] = useState(success);
   const [displayedData, setDisplayedData] = useState([]);
   const [hallForm, setHallForm] = useState({});
+  const [order, setOrder] = useState([]);
 
   const changeData = (d, e) => {
     const today = d.find((el) => el.active).fullDate;
@@ -130,7 +131,8 @@ export default function GuestProvider(props) {
         success,
         changeData,
         getCustomerData,
-        hallForm, setHallForm
+        hallForm, setHallForm,
+        order, setOrder
       }}
     >
       {props.children}

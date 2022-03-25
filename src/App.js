@@ -9,6 +9,7 @@ import MovieAdd from "./components/Admin/Cabinet/Popup/MovieAdd/MovieAdd";
 import ShowTimeAdd from "./components/Admin/Cabinet/Popup/ShowTimeAdd/ShowTimeAdd";
 import ShowTimeDelte from "./components/Admin/Cabinet/Popup/ShowTimeDelete/ShowTimeDelete";
 import Hall from "./components/Guest/Hall/Hall";
+import PaymentPage from "./components/Guest/PaymentPage/PaymentPage";
 
 function App() {
   return (
@@ -19,6 +20,9 @@ function App() {
         </Routes>
         <Routes>
           <Route path="/showTime/:id" element={<Hall />} />
+        </Routes>
+        <Routes>
+          <Route path="/payment/:id" element={<PaymentPage />} />
         </Routes>
       </Router>
       <Router>
