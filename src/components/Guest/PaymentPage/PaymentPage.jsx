@@ -4,8 +4,19 @@ import GuestContext from "../../../contex/Guest/GuestContext";
 import PropTypes from "prop-types";
 import HeaderGuest from "../Header/HeaderGuest";
 import { nanoid } from "nanoid";
+import Wrong from "../Wrong/Wrong";
 
 export default function PaymentPage() {
+  const { order } = useContext(GuestContext);
+
+  if (order.length === 0)
+    return (
+      <Main>
+        <HeaderGuest />
+        <Wrong />
+      </Main>
+    );
+
   return (
     <Main>
       <HeaderGuest />
@@ -15,6 +26,10 @@ export default function PaymentPage() {
       </section>
     </Main>
   );
+};
+
+PaymentPage.propTypes = {
+  order: PropTypes.array,
 }
 
 function PaymentHeader() {
@@ -27,12 +42,16 @@ function PaymentHeader() {
 
 function PaymentBody() {
   const [cost, setCost] = useState(0);
-  const { order, hallForm } = useContext(GuestContext);
+  const { order, hallForm, pay, setHallForm, setOrder } = useContext(GuestContext);
   const { movie, hall, date, time } = hallForm;
   const { number } = hall;
   const { name } = movie;
 
-  const count = () => {};
+  const click = () => {
+    pay({order, hallForm});
+    setHallForm(null);
+    setOrder([]);
+  };
 
   useEffect(() => {
     let start = 0;
@@ -44,14 +63,14 @@ function PaymentBody() {
     setCost(start);
   }, []);
 
-  const pay = () => {};
-
   return (
     <div className="ticket__info-wrapper">
       <p className="ticket__info">
         На фильм: <span className="ticket__details ticket__title">{name}</span>
       </p>
-      {order.map((el)=> <SeatAndRow item={el} key={nanoid()} />)}
+      {order.map((el) => (
+        <SeatAndRow item={el} key={nanoid()} />
+      ))}
       <p className="ticket__info">
         В зале: <span className="ticket__details ticket__hall">{number}</span>
       </p>
@@ -67,7 +86,7 @@ function PaymentBody() {
         рублей
       </p>
 
-      <button className="acceptin-button" onClick={pay}>
+      <button className="acceptin-button" onClick={click}>
         Получить код бронирования
       </button>
 
@@ -78,10 +97,10 @@ function PaymentBody() {
       <p className="ticket__hint">Приятного просмотра!</p>
     </div>
   );
-};
+}
 
 PaymentBody.propTypes = {
-  order: PropTypes.array, 
+  order: PropTypes.array,
   hallForm: PropTypes.object,
 };
 
@@ -89,13 +108,14 @@ function SeatAndRow({ item }) {
   const { row, seat } = item;
   return (
     <p className="ticket__info">
-      Ряд: <span className="ticket__details ticket__chairs">{row+1}</span>
-      <br/>
-      Места: <span className="ticket__details ticket__chairs">{seat+1}</span>
+      Ряд: <span className="ticket__details ticket__chairs">{row + 1}</span>
+      <br />
+      Места: <span className="ticket__details ticket__chairs">{seat + 1}</span>
     </p>
   );
-};
+}
 
 SeatAndRow.propTypes = {
   item: PropTypes.object,
+  pay: PropTypes.func,
 };

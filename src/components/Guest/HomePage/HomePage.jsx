@@ -4,10 +4,17 @@ import GuestContext from "../../../contex/Guest/GuestContext";
 import Movie from "../Movie/Movie";
 import DatePicker from "../DatePicker/DatePicker";
 import HeaderGuest from "../Header/HeaderGuest";
+import PropTypes from 'prop-types';
 import { nanoid } from "nanoid";
+import { useEffect } from "react";
 
 export default function HomePage() {
-  const { displayedData } = useContext(GuestContext);
+  const { displayedData, setOrder, setHallForm } = useContext(GuestContext);
+
+  useEffect(() => {
+    setHallForm(null);
+    setOrder([]);
+  }, []);
 
   if (displayedData.length === 0)
     return (
@@ -33,4 +40,10 @@ export default function HomePage() {
       </main>
     </Main>
   );
-}
+};
+
+HomePage.propTypes = {
+  displayedData: PropTypes.array, 
+  setOrder: PropTypes.func, 
+  setHallForm: PropTypes.func, 
+};

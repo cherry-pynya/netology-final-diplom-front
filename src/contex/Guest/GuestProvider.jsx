@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import React from "react";
 import GuestContext from "./GuestContext";
 import PropTypes from "prop-types";
@@ -9,14 +10,38 @@ export default function GuestProvider(props) {
   const pending = process.env.PENDING || "pending";
   const error = process.env.ERROR || "error";
   const success = process.env.SUCCESS || "success";
+  const navigate = useNavigate();
   const [dates, setDates] = useState(datesFactory());
   const [customerEvents, setCustomerEvents] = useState([]);
   const [sellingStatus, setSellingStatus] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date().getDate());
   const [appStatus, setAppStatus] = useState(success);
   const [displayedData, setDisplayedData] = useState([]);
-  const [hallForm, setHallForm] = useState({});
+  const [hallForm, setHallForm] = useState(null);
   const [order, setOrder] = useState([]);
+
+  const pay = (obj) => {
+    setAppStatus(pending);
+    try {
+      const url =
+        process.env.BUYTICKET ||
+        "http://localhost:4000/data/buyTicket";
+      fetch(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ obj }),
+      }).then(() => {
+        setAppStatus(success);
+        navigate("/");
+      });
+    } catch (e) {
+      setAppStatus(error);
+      console.log(e);
+    }
+  };
 
   const changeData = (d, e) => {
     const today = d.find((el) => el.active).fullDate;
@@ -132,7 +157,7 @@ export default function GuestProvider(props) {
         changeData,
         getCustomerData,
         hallForm, setHallForm,
-        order, setOrder
+        order, setOrder, pay
       }}
     >
       {props.children}

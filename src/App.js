@@ -13,8 +13,8 @@ import PaymentPage from "./components/Guest/PaymentPage/PaymentPage";
 
 function App() {
   return (
-    <GuestProvider>
-      <Router>
+    <Router>
+      <GuestProvider>
         <Routes>
           <Route exact path="/" element={<GuestMain />} />
         </Routes>
@@ -24,8 +24,6 @@ function App() {
         <Routes>
           <Route path="/payment/:id" element={<PaymentPage />} />
         </Routes>
-      </Router>
-      <Router>
         <AdminProvider>
           <ShowTimeDelte />
           <HallAdd />
@@ -35,8 +33,8 @@ function App() {
             <Route path="/admin" element={<AdminMain />} />
           </Routes>
         </AdminProvider>
-      </Router>
-    </GuestProvider>
+      </GuestProvider>
+    </Router>
   );
 }
 

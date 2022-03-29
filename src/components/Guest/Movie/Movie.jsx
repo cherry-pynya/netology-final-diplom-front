@@ -98,6 +98,6 @@ function HallItem({session}) {
 };
 
 HallItem.propTypes = {
+  setHallForm: PropTypes.func,
   session: PropTypes.object,
-
 };
